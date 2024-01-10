@@ -1,0 +1,81 @@
+esphome:
+  name: display
+esp8266:
+  board: nodemcu
+  early_pin_init: false
+  
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+#
+# Achtung: Für Offlinekalender muss der API-Reboot auf 0s gesetzt werden, da die Tonne sonst alle 15 Minuten neu startet.
+#
+api:
+  password: ""
+ #  reboot_timeout: 0s  # only enable this when creating an offline Wastebin
+
+ota:
+  password: ""
+
+wifi:
+  ssid: !secret GKssid
+#  for captive-portal remove password
+  password: !secret GKpassword
+  ap:
+    ssid: !secret FBssid
+    password: !secret FBpassword
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+captive_portal:
+#  keep_user_credentials: true  # option nicht aktiv.
+
+# i2c Bus auf D1 und D2 konfigurieren
+font:
+  - file: "times.ttf"
+    id: my_font
+    size: 15
+
+    
+i2c:
+  sda: D5
+  scl: D6
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+#    address: 0x3C
+    lambda: |-
+      it.print(0, 0, id(my_font), "Hallo Maus! HDGDL. GGA.");
+      it.print(0, 16, id(my_font), "Hallo Maus! HDGDL. GGA.");
+      it.print(0, 32, id(my_font), "Hallo Maus! HDGDL. GGA.");
+      it.print(0, 48, id(my_font), "Hallo Maus! HDGDL. GGA.");
+#      auto red = Color(255, 0, 0);
+#      auto green = Color(0, 255, 0);
+#      auto blue = Color(0, 0, 255);
+#      auto white = Color(255, 255, 255);
+#      it.line(0, 0, 128, 64, blue);  
+#      it.print(0, 0, id(my_font), "Hallo Maus!");
+#      it.print(0, 16, id(my_font), "Hallo Maus!");
+#      it.print(0, 32, id(my_font), "Hallo Maus!");
+#      it.print(0, 48, id(my_font), "Hallo Maus!");
+#      it.print(0, 44, id(my_font), "Hallo Maus!");
+#      it.print(0, 55, id(my_font), "Hallo Maus!");
+      
+switch:
+  - platform: gpio
+    pin:
+      number: D0
+      mode: output
+    id: LED1
+  - platform: gpio
+    pin:
+      number: D4
+      mode: output
+    id: LED2
+
+interval:
+  - interval: 1500ms
+    then:
+      - switch.toggle: LED1      
+      - switch.toggle: LED2
